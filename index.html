@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet" href="css/bootstrap.min.css"/>
+
+<script src="js/jquery-3.3.1.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/vue.js"></script>
+
+<style>
+table td {
+    width:50px;
+    height:50px;
+    text-align:center;
+    vertical-align:middle;
+    horizontal-align:center;
+    background-color: #B8B6B5;
+    margin: 1px;
+    float:left;
+}
+
+table td.highlighted {
+    background-color: #ff5125;
+}
+</style>
+</head>
+<body>
+
+<form action="drawGraph.php" method="post">
+<br /><br /><br />
+  <div class="container">
+		<div class="row">
+			<div class="col-4">
+				<label for="myIDs"><b>IDs</b></label>
+			</div>
+			<div class="col-8">
+				<input type="text" size="50%" placeholder="Enter IDs" name="myIDs" required>		
+			</div>
+		</div><br /><br />
+		<div class="row">
+			<div class="col-4">
+				<label><h4>Normal JS table</h4></label>
+			</div>
+			<div class="col-8">
+					<table cellpadding="0" cellspacing="1" id="wellsTable">
+						<tr id="row_0">
+
+						</tr>
+					</table><br /><br />
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="col-4">
+				<label><h4>VueJS table</h4></label>
+			</div>
+			<div class="col-8">
+					<table id="testtube">
+
+                    <tr v-for="rows in tableRows">
+                        <td v-for="c,cellNo in cols"						
+						v-bind:class="{selected: selectedData === experiment[cellNo]}"
+						v-on:click="pushData(experiment[cellNo])"						
+						>						
+							{{rowName[rows-1]}}:{{c}}
+						</td>
+
+                    </tr>
+                    </tbody>
+                </table>
+			</div>
+		</div><br /><br />
+		<div class="row">
+			<button type="submit">Submit</button>
+		</div>
+  </div>
+
+</form>
+
+<script type="text/javascript">
+    var RowName = ["A", "B", "C", "D" , "E" , "F" , "G" , "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"];
+	var mydata = [];
+    for(var i =7000; i< 7500;i++){
+        mydata.push(i);
+    }
+    totalRow = 4;//"{{all_bioreactors.0.bioreactor_type_id.number_of_rows}}";
+    totalCol = 8;//"{{all_bioreactors.0.bioreactor_type_id.number_of_columns}}";
+    console.log(totalRow);
+
+    new Vue({
+
+        el: '#testtube',
+        data: {
+            tableRows : totalRow,
+            cols : totalCol,
+			rowName: RowName,
+            experiment:mydata,
+			selectedData: [],
+			cellNo: 0,
+
+        },
+		methods: {
+                pushData: function(mySelectedData) {
+				this.selectedData.push = mySelectedData;
+				console.log(this.selectedData);
+			},
+			counter: function(){
+				return this.cellNo = this.cellNo+1;
+			}
+		},
+
+    });
+
+//vue end
+
+    container_number=1;
+    experiment_id=0;
+    
+    function createWells() {
+
+        for (i=0;i<totalRow*totalCol;i++)
+            loadWells()
+    }
+
+    row_nr = 0;
+    col_nr = 0;
+
+    function loadWells() {
+        console.log("well is called");
+        var table = document.getElementById("wellsTable");
+        var row = document.getElementById("row_" + row_nr);
+        var cell = row.insertCell(col_nr);
+        cell.innerHTML = RowName[row_nr] + "" + (col_nr+1);
+        col_nr++;
+        if (col_nr % totalCol == 0) {
+            col_nr = 0;
+            row_nr++;
+            container_number++;
+
+
+            var row = table.insertRow(row_nr);
+            row.setAttribute("id", "row_" + row_nr);
+            
+
+        }
+
+    }
+    window.onload=createWells() ;
+
+
+  // mouse drag
+
+    $(function () {
+        var isMouseDown = false;
+        $("#wellsTable td")
+            .mousedown(function () {
+                isMouseDown = true;
+                $(this).toggleClass("highlighted");
+                return false; // prevent text selection
+            })
+            .mouseover(function () {
+                if (isMouseDown) {
+                    $(this).toggleClass("highlighted");
+                }
+            })
+            .bind("selectstart", function () {
+                return false; // prevent text selection in IE
+            });
+
+        $(document)
+            .mouseup(function () {
+                isMouseDown = false;
+            });
+    });
+	
+
+
+  
+
+
+
+</script>
+
+
+</body>
+</html>
