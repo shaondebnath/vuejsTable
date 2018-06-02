@@ -63,10 +63,10 @@ table td.highlighted {
 
                     <tr v-for="rows in tableRows">
                         <td v-for="c in cols"						
-						v-bind:class="{selected: selectedData === experiment[c]}"
-						v-on:click="pushData(experiment[c])"						
+						v-bind:class="{selected: selectedData === experiment[counter(rows,c)]}"
+						v-on:click="pushData(experiment[counter(rows,c)])"						
 						>
-							{{rowName[rows-1]}}:{{c}}:{{experiment[c]}}
+							{{rowName[rows-1]}}:{{c}}:{{experiment[counter(rows,c)]}}
 						</td>
 
                     </tr>
@@ -109,14 +109,27 @@ table td.highlighted {
         },
 		methods: {
             pushData: function(mySelectedData) {
-				this.selectedData.push(mySelectedData);
+				var isFound = false;
+				for(var i = this.selectedData.length - 1; i >= 0; i--) {
+					if(this.selectedData[i] === mySelectedData) {
+						console.log(this.selectedData[i]+"found"+i);
+					    this.selectedData.splice(i, 1);
+						isFound = true;
+					}
+				}
+				
+				if(!isFound){
+					this.selectedData.push(mySelectedData);
+					console.log("data Added");
+				}
 				console.log(this.selectedData);
+				
 			},
 			counter: function(r,c){
-				//var cellNo=r*this.totalCol+c;
-				console.log ("this is:"+r+":"+this.cols+":"+c);
-				console.log ("this is:"+r*this.cols+c);
-				//return r*this.totalCol+c;
+				var cellNo=(r-1)*this.cols+(c-1);
+				//console.log ("this is:"+r+":"+this.cols+":"+c);
+				//console.log ("this is:"+cellNo);
+				return cellNo;
 				
 				//return this.cellNo = this.cellNo+ 1;
 			},			
@@ -124,7 +137,7 @@ table td.highlighted {
 			console.log("data will be submitted:"+this.selectedData)
 				//event.preventDefault();
 				
-			}
+			},			
 			
 		},
 
@@ -191,6 +204,31 @@ table td.highlighted {
                 isMouseDown = false;
             });
     });
+	
+	 $(function () {
+        var isMouseDown = false;
+        $("#testtube td")
+            .click(function () {
+                isMouseDown = true;
+                $(this).toggleClass("highlighted");
+                return false; // prevent text selection
+            })
+            /*.mouseover(function () {
+                if (isMouseDown) {
+                    $(this).toggleClass("highlighted");
+                }
+            })*/
+            .bind("selectstart", function () {
+                return false; // prevent text selection in IE
+            });
+
+        $(document)
+            .mouseup(function () {
+                isMouseDown = false;
+            });
+    });
+	
+
 	
 
 
