@@ -64,7 +64,9 @@ table td.highlighted {
                     <tr v-for="rows in tableRows">
                         <td v-for="c in cols"						
 						v-bind:class="{selected: selectedData === experiment[counter(rows,c)]}"
-						v-on:click="pushData(experiment[counter(rows,c)])"						
+						v-on:mousedown="mouseDown(experiment[counter(rows,c)])"
+						v-on:mouseover="mouseOver(experiment[counter(rows,c)])"
+						v-on:mouseup="mouseUp"
 						>
 							{{rowName[rows-1]}}:{{c}}:{{experiment[counter(rows,c)]}}
 						</td>
@@ -103,8 +105,8 @@ table td.highlighted {
 			rowName: RowName,
             experiment:mydata,
 			selectedData: [],
-			cellNo: 0,
-			output:[]
+			cellNo: 0,			
+			isMouseDown:false
 
         },
 		methods: {
@@ -134,10 +136,25 @@ table td.highlighted {
 				//return this.cellNo = this.cellNo+ 1;
 			},			
 			submitValue: function(event){
-			console.log("data will be submitted:"+this.selectedData)
-				//event.preventDefault();
-				
+				console.log("data will be submitted:"+this.selectedData)
+				//event.preventDefault();				
+			},	
+
+			mouseOver: function(mySelectedData){
+				if(!this.isMouseDown)
+					return;
+				this.pushData(mySelectedData);
+			},
+			
+			mouseDown: function(mySelectedData){
+				this.isMouseDown=true	
+				this.pushData(mySelectedData);
+				$(this).toggleClass("highlighted");
+                return false;				
 			},			
+			mouseUp: function(){
+				this.isMouseDown=false			
+			}
 			
 		},
 
@@ -208,16 +225,16 @@ table td.highlighted {
 	 $(function () {
         var isMouseDown = false;
         $("#testtube td")
-            .click(function () {
+            .mousedown(function () {
                 isMouseDown = true;
                 $(this).toggleClass("highlighted");
                 return false; // prevent text selection
             })
-            /*.mouseover(function () {
+            .mouseover(function () {
                 if (isMouseDown) {
                     $(this).toggleClass("highlighted");
                 }
-            })*/
+            })
             .bind("selectstart", function () {
                 return false; // prevent text selection in IE
             });
