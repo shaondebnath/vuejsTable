@@ -1,9 +1,9 @@
 <?php
 	$myIDs = $_POST["myIDs"];
-	//$tableValue =$_POST["tableValue"];
+	$tableValue =$_POST["tableValue"];
 	
 	echo "myIDs = ". $myIDs;
-	//echo "\n tableValue = " . $tableValue;
+	echo "\n tableValue = " . $tableValue;
 
 	
 ?>

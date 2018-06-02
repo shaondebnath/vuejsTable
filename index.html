@@ -11,7 +11,7 @@
 
 <style>
 table td {
-    width:50px;
+    width:100px;
     height:50px;
     text-align:center;
     vertical-align:middle;
@@ -28,7 +28,9 @@ table td.highlighted {
 </head>
 <body>
 
-<form action="drawGraph.php" method="post">
+<div id="testtube">
+
+<form v-on:submit="submitValue" action="drawGraph.php" method="post">
 <br /><br /><br />
   <div class="container">
 		<div class="row">
@@ -57,27 +59,30 @@ table td.highlighted {
 				<label><h4>VueJS table</h4></label>
 			</div>
 			<div class="col-8">
-					<table id="testtube">
+					<table id="a">
 
                     <tr v-for="rows in tableRows">
-                        <td v-for="c,cellNo in cols"						
-						v-bind:class="{selected: selectedData === experiment[cellNo]}"
-						v-on:click="pushData(experiment[cellNo])"						
-						>						
-							{{rowName[rows-1]}}:{{c}}
+                        <td v-for="c in cols"						
+						v-bind:class="{selected: selectedData === experiment[c]}"
+						v-on:click="pushData(experiment[c])"						
+						>
+							{{rowName[rows-1]}}:{{c}}:{{experiment[c]}}
 						</td>
 
                     </tr>
                     </tbody>
                 </table>
 			</div>
+			<input type="hidden" name="tableValue" v-model="selectedData">
 		</div><br /><br />
 		<div class="row">
+		<button @click.prevent="submitValue()">Get values</button>
 			<button type="submit">Submit</button>
 		</div>
   </div>
 
 </form>
+</div>
 
 <script type="text/javascript">
     var RowName = ["A", "B", "C", "D" , "E" , "F" , "G" , "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"];
@@ -86,7 +91,7 @@ table td.highlighted {
         mydata.push(i);
     }
     totalRow = 4;//"{{all_bioreactors.0.bioreactor_type_id.number_of_rows}}";
-    totalCol = 8;//"{{all_bioreactors.0.bioreactor_type_id.number_of_columns}}";
+    totalCol = 4;//"{{all_bioreactors.0.bioreactor_type_id.number_of_columns}}";
     console.log(totalRow);
 
     new Vue({
@@ -99,16 +104,28 @@ table td.highlighted {
             experiment:mydata,
 			selectedData: [],
 			cellNo: 0,
+			output:[]
 
         },
 		methods: {
-                pushData: function(mySelectedData) {
-				this.selectedData.push = mySelectedData;
+            pushData: function(mySelectedData) {
+				this.selectedData.push(mySelectedData);
 				console.log(this.selectedData);
 			},
-			counter: function(){
-				return this.cellNo = this.cellNo+1;
+			counter: function(r,c){
+				//var cellNo=r*this.totalCol+c;
+				console.log ("this is:"+r+":"+this.cols+":"+c);
+				console.log ("this is:"+r*this.cols+c);
+				//return r*this.totalCol+c;
+				
+				//return this.cellNo = this.cellNo+ 1;
+			},			
+			submitValue: function(event){
+			console.log("data will be submitted:"+this.selectedData)
+				//event.preventDefault();
+				
 			}
+			
 		},
 
     });
